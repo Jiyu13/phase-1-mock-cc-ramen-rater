@@ -3,11 +3,12 @@ let ramenMenu = document.querySelector("#ramen-menu")
 let ramenDetail = document.querySelector("#ramen-detail")
 
 let ramenImg = document.querySelector(".detail-image")
-let ramenName = ramenDetail.querySelector(".name")
-let ramenRestaurant = ramenDetail.querySelector(".restaurant")
+let ramenName = document.querySelector(".name")
+let ramenRestaurant = document.querySelector(".restaurant")
 let ramenRating = document.querySelector("#rating-display")
 let ramenComment = document.querySelector("#comment-display")
 let newForm = document.querySelector("#new-ramen")
+
 
 newForm.addEventListener("submit", (event) => {
     event.preventDefault()
@@ -15,10 +16,21 @@ newForm.addEventListener("submit", (event) => {
 
 })
 
+// get first ramen
+function fetchFirstRamen() {
+    fetch("http://localhost:3000/ramens/1")
+    .then(response => response.json())
+    .then(firstRamem => {
+        ramenImg.src = firstRamem.image
+        ramenName.textContent = firstRamem.name
+        ramenRestaurant.textContent = firstRamem.restaurant
+        ramenRating.textContent = firstRamem.rating
+        ramenComment.textContent = firstRamem.comment
+    })
+}
+
 
 function postNewRamen(newObj) {
-    console.log(newObj)
-    console.log(newObj['new-comment'])
     fetch("http://localhost:3000/ramens", {
         method: "POST",
         headers: {
@@ -37,15 +49,6 @@ function postNewRamen(newObj) {
     .then(newRamen => renderRamen(newRamen))
 }
 
-
-function getALLRamen() {
-    fetch("http://localhost:3000/ramens")
-    .then(response => response.json())
-    .then(ramenData => ramenData.forEach(ramen => renderRamen(ramen)))
-}
-getALLRamen()
-
-
 function renderRamen(ramen) {
     let img = document.createElement("img")
     img.src = ramen.image
@@ -61,6 +64,11 @@ function renderRamen(ramen) {
 }
 
 
+function getALLRamen() {
+    fetch("http://localhost:3000/ramens")
+    .then(response => response.json())
+    .then(ramenData => ramenData.forEach(ramen => renderRamen(ramen)))
+}
 
-
-
+getALLRamen()
+fetchFirstRamen()
