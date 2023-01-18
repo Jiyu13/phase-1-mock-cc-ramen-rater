@@ -1,4 +1,3 @@
-// write your code here
 let ramenMenu = document.querySelector("#ramen-menu")
 let ramenDetail = document.querySelector("#ramen-detail")
 
@@ -16,9 +15,9 @@ newForm.addEventListener("submit", (event) => {
 
 })
 
-// get first ramen
-function fetchFirstRamen() {
-    fetch("http://localhost:3000/ramens/1")
+// get ramen
+function fetchRamen(id=1) {
+    fetch(`http://localhost:3000/ramens/${id}`)
     .then(response => response.json())
     .then(firstRamem => {
         ramenImg.src = firstRamem.image
@@ -46,8 +45,14 @@ function postNewRamen(newObj) {
         })
     })
     .then(response => response.json())
-    .then(newRamen => renderRamen(newRamen))
+    .then(newRamen => {
+        // load new ramen to ramenDetail container when being created
+        fetchRamen(newRamen.id)
+        renderRamen(newRamen)
+    })
+    
 }
+
 
 function renderRamen(ramen) {
     let img = document.createElement("img")
@@ -61,6 +66,7 @@ function renderRamen(ramen) {
         ramenComment.innerHTML = ramen.comment
     })
     ramenMenu.append(img)
+    
 }
 
 
@@ -68,7 +74,7 @@ function getALLRamen() {
     fetch("http://localhost:3000/ramens")
     .then(response => response.json())
     .then(ramenData => ramenData.forEach(ramen => renderRamen(ramen)))
+    fetchRamen()
 }
 
 getALLRamen()
-fetchFirstRamen()
