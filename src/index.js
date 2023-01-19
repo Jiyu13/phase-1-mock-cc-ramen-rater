@@ -8,6 +8,33 @@ let ramenRating = document.querySelector("#rating-display")
 let ramenComment = document.querySelector("#comment-display")
 let newForm = document.querySelector("#new-ramen")
 let editForm = document.querySelector("#edit-ramen")
+let body = document.querySelector("body")
+
+let currentId = -1;
+
+const deleteBtn = document.createElement("button")
+deleteBtn.textContent = "Delete"
+ramenDetail.append(deleteBtn)
+
+
+deleteBtn.addEventListener("click", (event) => {
+    event.preventDefault()
+    deleteRamen(currentId)
+    let firstRamen = ramenMenu.firstElementChild
+    // console.log(firstRamen)
+    fetchRamen(id=firstRamen.id) // go back to the first img after any ramen is deleted
+})
+
+function deleteRamen(id) {
+    fetch(`http://localhost:3000/ramens/${id}`, {
+    method: "DELETE",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    body: null
+    })
+
+}
 
 
 newForm.addEventListener("submit", (event) => {
@@ -18,7 +45,7 @@ newForm.addEventListener("submit", (event) => {
 
 editForm.addEventListener("submit", (event) => {
     event.preventDefault()
-    ramenRating.innerHTML = event.target.querySelector("#new-rating").value
+    ramenRating.innerHTML = parseInt(event.target.querySelector("#new-rating").value)
     ramenComment.innerHTML = event.target.querySelector("#new-comment").value
     editForm.reset()
     
@@ -30,12 +57,12 @@ editForm.addEventListener("submit", (event) => {
 function fetchRamen(id=1) {
     fetch(`http://localhost:3000/ramens/${id}`)
     .then(response => response.json())
-    .then(ramem => {
-        ramenImg.src = ramem.image
-        ramenName.textContent = ramem.name
-        ramenRestaurant.textContent = ramem.restaurant
-        ramenRating.textContent = ramem.rating
-        ramenComment.textContent = ramem.comment
+    .then(ramen => {
+        ramenImg.src= ramen.image
+        ramenName.textContent = ramen.name
+        ramenRestaurant.textContent = ramen.restaurant
+        ramenRating.textContent = parseInt(ramen.rating)
+        ramenComment.textContent = ramen.comment
     })
 }
 
@@ -51,17 +78,18 @@ function postNewRamen(newObj) {
             "name": newObj.name.value,
             "restaurant": newObj.restaurant.value,
             "image": newObj.image.value,
-            "rating": newObj.rating.value,
+            "rating": parseInt(newObj.rating.value),
             "comment": newObj['new-comment'].value
         })
     })
     .then(response => response.json())
     .then(newRamen => {
         // load new ramen to ramenDetail container when being created
-        fetchRamen(newRamen.id)
-        renderRamen(newRamen)
+        fetchRamen(id=newRamen.id)
+        renderRamen(newRamen)  
+        
     })
-    newForm.reset() //
+    newForm.reset()
 }
 
 
@@ -73,11 +101,12 @@ function renderRamen(ramen) {
         ramenImg.src = ramen.image
         ramenName.innerHTML = ramen.name
         ramenRestaurant.innerHTML = ramen.restaurant
-        ramenRating.innerHTML = ramen.rating
+        ramenRating.innerHTML = parseInt(ramen.rating)
         ramenComment.innerHTML = ramen.comment
+        currentId = ramen.id
     })
     ramenMenu.append(img)
-    
+
 }
 
 
@@ -85,7 +114,7 @@ function getALLRamen() {
     fetch("http://localhost:3000/ramens")
     .then(response => response.json())
     .then(ramenData => ramenData.forEach(ramen => renderRamen(ramen)))
-    fetchRamen()
+    fetchRamen() // first load show first ramen
 }
 
 getALLRamen()
