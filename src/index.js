@@ -7,6 +7,7 @@ let ramenRestaurant = document.querySelector(".restaurant")
 let ramenRating = document.querySelector("#rating-display")
 let ramenComment = document.querySelector("#comment-display")
 let newForm = document.querySelector("#new-ramen")
+let editForm = document.querySelector("#edit-ramen")
 
 
 newForm.addEventListener("submit", (event) => {
@@ -15,16 +16,26 @@ newForm.addEventListener("submit", (event) => {
 
 })
 
+editForm.addEventListener("submit", (event) => {
+    event.preventDefault()
+    ramenRating.innerHTML = event.target.querySelector("#new-rating").value
+    ramenComment.innerHTML = event.target.querySelector("#new-comment").value
+    editForm.reset()
+    
+})
+
+
+
 // get ramen
 function fetchRamen(id=1) {
     fetch(`http://localhost:3000/ramens/${id}`)
     .then(response => response.json())
-    .then(firstRamem => {
-        ramenImg.src = firstRamem.image
-        ramenName.textContent = firstRamem.name
-        ramenRestaurant.textContent = firstRamem.restaurant
-        ramenRating.textContent = firstRamem.rating
-        ramenComment.textContent = firstRamem.comment
+    .then(ramem => {
+        ramenImg.src = ramem.image
+        ramenName.textContent = ramem.name
+        ramenRestaurant.textContent = ramem.restaurant
+        ramenRating.textContent = ramem.rating
+        ramenComment.textContent = ramem.comment
     })
 }
 
@@ -50,7 +61,7 @@ function postNewRamen(newObj) {
         fetchRamen(newRamen.id)
         renderRamen(newRamen)
     })
-    
+    newForm.reset() //
 }
 
 
